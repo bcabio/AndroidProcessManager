@@ -1,11 +1,13 @@
 package com.example.brian.os_project;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,6 +22,7 @@ import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Activity;
 import android.content.Context;
 
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.ListView;
@@ -27,8 +30,15 @@ import android.widget.ListView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.example.brian.os_project.ProcessDetailsActivity;
+
 public class ProcessList extends AppCompatActivity {
 
+    public static final String PROCESS_DETAILS_INTENT_MESSAGE = "com.example.brian.os_project.RUNNING_APP_PROCESS_INFO";
+
+    StableArrayAdapter adapter;
+    List<RunningAppProcessInfo> currentRunningProcesses;
+    ActivityManager activityManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,32 +46,55 @@ public class ProcessList extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         ListView listview = (ListView) findViewById(R.id.processList);
+
+
+
 
         ArrayList<RunningAppProcessInfo> processes = new ArrayList<>();
 
-        StableArrayAdapter adapter = new StableArrayAdapter(this, processes);
+        adapter = new StableArrayAdapter(this, processes);
         listview.setAdapter(adapter);
 
-        ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        List<RunningAppProcessInfo> n = activityManager.getRunningAppProcesses();
+        activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        currentRunningProcesses = activityManager.getRunningAppProcesses();
 
-        Collections.sort(n, new SortByPID());
+        Collections.sort(currentRunningProcesses, new SortByPID());
 
-        for(RunningAppProcessInfo x: n) {
+        for(RunningAppProcessInfo x: currentRunningProcesses) {
             adapter.add(x);
         }
 
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                openProcessDetails(view, (RunningAppProcessInfo) parent.getAdapter().getItem(position));
+            }
+        });
 
+
+    }
+
+    public void openProcessDetails (View view, RunningAppProcessInfo runningAppProcessInfo) {
+        Intent intent = new Intent(this, ProcessDetailsActivity.class);
+
+        String[] fullProcessName = runningAppProcessInfo.processName.split("[.]");
+
+        String s = "";
+        for(int i = 0; i < fullProcessName.length; i++) {
+            s += fullProcessName[i];
+            if (i == fullProcessName.length - 2) {
+                intent.putExtra("PACKAGE_PREFIX", s);
+                break;
+            }
+            s += ".";
+        }
+
+        intent.putExtra("PROCESS_NAME", fullProcessName[fullProcessName.length-1]);
+//        intent.putExtra("PROCESS_LIST_ADAPTER", r);
+
+        intent.putExtra(PROCESS_DETAILS_INTENT_MESSAGE, runningAppProcessInfo);
+        startActivity(intent);
     }
 
     @Override
@@ -80,6 +113,11 @@ public class ProcessList extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            adapter.clear();
+            for(RunningAppProcessInfo x: currentRunningProcesses) {
+                if(activityManager.getProcessMemoryInfo(new int[]{x.pid})[0].getTotalPrivateDirty() != 0)
+                    adapter.add(x);
+            }
             return true;
         }
 
@@ -116,6 +154,8 @@ public class ProcessList extends AppCompatActivity {
 
             return convertView;
         }
+
+
 
     }
 
