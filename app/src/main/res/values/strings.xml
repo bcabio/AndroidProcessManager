@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">OS_PROJECT</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_process_details">ProcessDetailsActivity</string>
+</resources>

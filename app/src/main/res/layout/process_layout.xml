@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dip">
+    <TextView
+        android:id="@+id/process_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Default"/>
+
+    <TextView
+        android:id="@+id/process_importance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/process_name"
+        android:textColor="#343434"
+        android:layout_marginTop="5dip"
+        android:textSize="12sp"
+        android:text="number"/>
+
+    <TextView
+        android:id="@+id/process_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/process_importance"
+        android:layout_alignBottom="@+id/process_importance"
+        android:layout_alignParentRight="true"
+        android:textColor="#343434"
+        android:textSize="12sp"
+        android:text="Hello"/>
+    <!--<Button-->
+        <!--android:text="CLICK ME"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content" />-->
+</RelativeLayout>
