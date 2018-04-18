@@ -45,6 +45,7 @@ public class ProcessList extends AppCompatActivity {
         setContentView(R.layout.activity_process_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Android Process Manager");
 
         ListView listview = (ListView) findViewById(R.id.processList);
 

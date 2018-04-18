@@ -31,15 +31,16 @@ public class ProcessDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_process_details);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Process Details");
         setSupportActionBar(toolbar);
-
 
         Intent intent = getIntent();
         final RunningAppProcessInfo runningAppProcessInfo = intent.getParcelableExtra(ProcessList.PROCESS_DETAILS_INTENT_MESSAGE);
         TextView processDetailsName = findViewById(R.id.process_details_name);
         TextView processMemoryUsage = findViewById(R.id.process_memory_usage);
         TextView processPackageName = findViewById(R.id.process_package_name);
-
+        TextView processDetailsImportance = findViewById(R.id.process_details_importance);
+        TextView processDetailsPID = findViewById(R.id.process_details_pid);
         String processName = intent.getStringExtra("PROCESS_NAME");
 
         activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
@@ -52,6 +53,8 @@ public class ProcessDetailsActivity extends AppCompatActivity {
         processPackageName.setText(packagePrefix);
         processDetailsName.setText(processName);
         processMemoryUsage.setText("Total Memory Usage: " + String.valueOf(totalPrivateCleanMemory) + "Kb");
+        processDetailsImportance.setText("Importance: " + String.valueOf(runningAppProcessInfo.importance));
+        processDetailsPID.setText("PID: " + String.valueOf(runningAppProcessInfo.pid));
 
         Button killProcessButton = findViewById(R.id.kill_process_button);
         killProcessButton.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +87,6 @@ public class ProcessDetailsActivity extends AppCompatActivity {
 
                     }
                 })
-                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
     }
 
